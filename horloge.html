@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Horloge en temps réel</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #cdf6d0, #c6ffc1);
+      font-family: 'Poppins', sans-serif;
+      color:rgb(21, 199, 24);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 360px;
+      max-width: 95vw;
+      background: rgb(100, 231, 126);
+      border-radius: 25px;
+      box-shadow: 0 0 30px rgba(76, 228, 99, 0.3);
+      padding: 3rem 4rem;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .time {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: 5px;
+      font-family: 'Courier New', Courier, monospace;
+      margin-bottom: 0.4rem;
+      font-variant-numeric: tabular-nums;
+      width: 100%;
+      text-align: center;
+      display: inline-block;
+      min-width: 20ch;
+      box-sizing: content-box;
+    }
+
+    .date {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #3bdf59;
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .toggle-btn {
+      background-color: #69ff6c;
+      border: none;
+      color: rgb(217, 243, 222);
+      padding: 0.7rem 2rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .toggle-btn:hover {
+      background-color: #15c736;
+    }
+
+    @media (max-width: 400px) {
+      .container {
+        padding: 2rem 2rem;
+      }
+      .time {
+        font-size: 2.8rem;
+        letter-spacing: 4px;
+        min-width: 18ch;
+      }
+      .date {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Horloge en temps réel">
+    <div id="time" class="time" aria-live="polite" aria-atomic="true">00:00:00</div>
+    <div id="date" class="date" aria-live="polite" aria-atomic="true">lundi 1 janvier  2025</div>
+    <button id="toggleFormat" class="toggle-btn" aria-label="Changer format heure">Passer en 12h</button>
+  </div>
+
+  <script>
+    let is24HourFormat = true;
+
+    function updateClock() {
+      const now = new Date();
+
+      let hours = now.getHours();
+      let ampm = '';
+
+      if (!is24HourFormat) {
+        ampm = hours >= 12 ? ' PM' : ' AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 devient 12
+      }
+
+      const h = String(hours).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      const timeString = `${h}:${m}:${s}${ampm}`;
+
+      const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+      const mois = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+      const dayName = jours[now.getDay()];
+      const dayNumber = now.getDate();
+      const monthName = mois[now.getMonth()];
+      const year = now.getFullYear();
+
+      const dateString = `${dayName} ${dayNumber} ${monthName} ${year}`;
+
+      document.getElementById('time').textContent = timeString;
+      document.getElementById('date').textContent = dateString;
+    }
+
+    document.getElementById('toggleFormat').addEventListener('click', () => {
+      is24HourFormat = !is24HourFormat;
+      document.getElementById('toggleFormat').textContent = is24HourFormat ? 'Passer en 12h' : 'Passer en 24h';
+      updateClock();
+    });
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
